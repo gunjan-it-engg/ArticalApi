@@ -106,4 +106,48 @@ user.post("/user/follow-user/:user_id", auth, (req, res) => {
   });
 });
 
+//End-point for unfollow the user
+user.post("/user/unfollow-user/:user_id", auth, (req, res) => {
+  // check if the requested user and :user_id is same if same then
+  try {
+    if (req.user.id === req.params.user_id) {
+      return res
+        .status(400)
+        .json({ alreadyUnfollow: "You cannot unfollow yourself" });
+    }
+
+    User.findById(req.params.user_id).then((user) => {
+      // check if the requested user is already in unfollower list of other user then
+      console.log(
+        req.user.following.find(
+          (following) => following.user.toString() === req.params.user_id
+        )
+      );
+      if (
+        !req.user.following.find(
+          (following) => following.user.toString() === req.params.user_id
+        )
+      ) {
+        return res
+          .status(400)
+          .json({ alreadyUnfollow: "You already Unfollowed the user" });
+      } else {
+        req.user.following = req.user.following.filter(
+          (following) => following.user.toString() !== req.params.user_id
+        );
+        req.user.save();
+
+        user.followers = user.followers.filter(
+          (followers) => followers.user.toString() !== req.user.id
+        );
+        user.save();
+
+        return res.status(200).json("Successfully unfollowed");
+      }
+    });
+  } catch (error) {
+    return res.status(400).json({ alreadyUnfollow: error });
+  }
+});
+
 module.exports = user;
