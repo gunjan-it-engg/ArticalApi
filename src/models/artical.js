@@ -24,7 +24,20 @@ const Articalschema = new mongoose.Schema(
     completed: {
       type: String,
     },
-    comment: [{ type: String, default: 0 }],
+    // comment: [{ type: String, default: 0 }],
+    comments: [
+      {
+        description: {
+          type: String,
+          trim: true,
+        },
+        userId: {
+          type: mongoose.Schema.Types.ObjectId,
+          required: true,
+          ref: "User",
+        },
+      },
+    ],
     owner: {
       type: mongoose.Schema.Types.ObjectId,
       required: true,

@@ -18,7 +18,7 @@ app.use(ArticalRouter);
 app.use(TopicRouter);
 //default path setup
 app.get("/", (req, res) => {
-  res.send("This is homepage");
+  res.send("This is the homepage of Artical-Rest-Api");
 });
 
 app.listen(port, () => {

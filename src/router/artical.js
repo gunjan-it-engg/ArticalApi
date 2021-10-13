@@ -141,11 +141,17 @@ artical.post("/artical/mostrecent", auth, async (req, res) => {
 artical.post("/artical/comment", auth, async (req, res) => {
   try {
     // console.log(req.body);
-    const { comment, _id } = req.body;
+    // const { comment, _id } = req.body;
+    const { _id, description } = req.body;
+    const comment = {
+      description,
+      userId: req.user._id,
+    };
     console.log(comment);
     const article = await Artical.findOneAndUpdate(
       { _id },
-      { $push: { comment: comment } },
+      // { $push: { comments: comment } },
+      { $push: { comments: comment } },
       { new: true }
     );
     res.status(200).send(article);
