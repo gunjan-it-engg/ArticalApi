@@ -106,11 +106,11 @@ artical.get("/artical/:id", auth, async (req, res) => {
 
 // Get artical by topic
 artical.get("/articalss/", auth, async (req, res) => {
-  const _category = req.query.category;
+  const _topic = req.query.topic;
   //   console.log(req.params.category);
-  console.log("params is : ", _category);
+  console.log("params is : ", _topic);
   try {
-    const artical = await Artical.find({ topic: _category });
+    const artical = await Artical.find({ topic: _topic });
     if (!artical) {
       return res.status(404).send("Article not exist");
     }
