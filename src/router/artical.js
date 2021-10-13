@@ -105,7 +105,7 @@ artical.get("/artical/:id", auth, async (req, res) => {
 });
 
 // Get artical by topic
-artical.get("/articalss/", async (req, res) => {
+artical.get("/articalss/", auth, async (req, res) => {
   const _category = req.query.category;
   //   console.log(req.params.category);
   console.log("params is : ", _category);
@@ -119,6 +119,38 @@ artical.get("/articalss/", async (req, res) => {
   } catch (e) {
     console.log(e);
     res.status(500).send(e);
+  }
+});
+
+// Get most recent articals
+artical.post("/artical/mostrecent", auth, async (req, res) => {
+  try {
+    const article = await Artical.aggregate([
+      {
+        $sort: { createdAt: -1 },
+      },
+    ]);
+    res.status(200).send(article[0]);
+  } catch (e) {
+    console.log(e);
+    res.status(500).send(e);
+  }
+});
+
+// Adding an Comment on the artical
+artical.post("/artical/comment", auth, async (req, res) => {
+  try {
+    // console.log(req.body);
+    const { comment, _id } = req.body;
+    console.log(comment);
+    const article = await Artical.findOneAndUpdate(
+      { _id },
+      { $push: { comment: comment } },
+      { new: true }
+    );
+    res.status(200).send(article);
+  } catch (err) {
+    res.status(500).send(err);
   }
 });
 

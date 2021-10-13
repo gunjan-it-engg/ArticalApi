@@ -24,6 +24,7 @@ const Articalschema = new mongoose.Schema(
     completed: {
       type: String,
     },
+    comment: [{ type: String, default: 0 }],
     owner: {
       type: mongoose.Schema.Types.ObjectId,
       required: true,
