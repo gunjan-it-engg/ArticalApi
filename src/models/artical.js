@@ -8,9 +8,10 @@ const Articalschema = new mongoose.Schema(
       trim: true,
     },
     topic: {
-      type: String,
+      type: mongoose.Schema.Types.ObjectId,
+      // type: String,
+      ref: "Topic",
       required: true,
-      trim: true,
     },
     description: {
       type: String,

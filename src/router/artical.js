@@ -2,18 +2,31 @@ const express = require("express");
 const artical = new express.Router();
 const Artical = require("../models/artical");
 const auth = require("../middleware/auth");
+const Topic = require("../models/topic");
 
 // send artical
 artical.post("/artical", auth, async (req, res) => {
-  console.log(req.body);
+  // console.log(req.body);
   // const task = new Task(req.body);
+  const topic = await Topic.findOne({ topic: req.body.topic });
+  // console.log("dfssadffsadfsaf", topic._id);
+  if (topic == null) {
+    return res.status(404).send("Topic not found");
+  }
   const artical = new Artical({
     ...req.body,
+    topic: topic,
     owner: req.user.id,
   });
   try {
     await artical.save();
-    res.status(201).send(artical);
+
+    res.status(201).send({
+      id: artical._id,
+      title: artical.title,
+      topic: artical.topic.topic,
+      description: artical.description,
+    });
   } catch (e) {
     res.status(404).send(e);
   }
