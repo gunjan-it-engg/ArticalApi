@@ -10,6 +10,11 @@ const userSchema = new mongoose.Schema(
       required: true,
       trim: true,
     },
+    // username: {
+    //   type: String,
+    //   required: true,
+    //   trim: true,
+    // },
     email: {
       type: String,
       unique: true,
@@ -51,22 +56,7 @@ const userSchema = new mongoose.Schema(
         },
       },
     ],
-    following: [
-      {
-        user: {
-          type: mongoose.Schema.Types.ObjectId,
-          ref: "User",
-        },
-      },
-    ],
-    followers: [
-      {
-        user: {
-          type: mongoose.Schema.Types.ObjectId,
-          ref: "User",
-        },
-      },
-    ],
+
     avatar: {
       type: Buffer,
     },
@@ -77,11 +67,7 @@ const userSchema = new mongoose.Schema(
 );
 
 // Method for storing the articals
-userSchema.virtual("articals", {
-  ref: "Artical",
-  localField: "_id",
-  foreignField: "owner",
-});
+//
 
 // method for get profile and mainupulate some important information
 userSchema.methods.toJSON = function () {
