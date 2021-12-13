@@ -14,6 +14,10 @@ const AdduserSchema = new mongoose.Schema(
       type: String,
       required: true,
     },
+    date: {
+      type: Date,
+      required: true,
+    },
     password: {
       type: String,
       required: true,
