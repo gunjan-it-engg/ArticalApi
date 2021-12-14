@@ -11,7 +11,7 @@ const e = require("express");
 
 employe.post("/adduser", async (req, res) => {
   try {
-    const { name, lname, email, password, phone } = req.body.data;
+    const { name, lname, email, password, phone, date } = req.body.data;
     const emp = await new Adduser({
       name,
       lname,
