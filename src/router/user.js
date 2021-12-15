@@ -6,16 +6,16 @@ const auth = require("../middleware/auth");
 // user registration form
 
 user.post("/users", async (req, res) => {
-  console.log(req.body);
   try {
-    const user = new User(req.body);
+    const user = new User(req.body.data);
+    console.log("user", user);
     await user.save();
     const token = await user.generateAuthToken();
     console.log(token);
     res.status(201).send({ user, token });
-  } catch (e) {
-    console.log(e);
-    res.status(400).send("email already exist");
+  } catch (error) {
+    console.log(error);
+    res.status(400).send(error.message);
   }
 });
 

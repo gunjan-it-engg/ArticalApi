@@ -32,7 +32,7 @@ const userSchema = new mongoose.Schema(
       unique: true,
       required: true,
       trim: true,
-      minlength: 7,
+      minlength: 3,
       validate(value) {
         if (value.includes("password")) {
           throw new Error("Password canot contain 'password' ");
