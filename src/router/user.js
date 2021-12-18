@@ -12,7 +12,7 @@ user.post("/users", async (req, res) => {
     await user.save();
     const token = await user.generateAuthToken();
     console.log(token);
-    res.status(201).send({ user, token });
+    res.status(201).send({ user });
   } catch (error) {
     console.log(error);
     res.status(400).send(error.message);
@@ -58,8 +58,8 @@ user.get("/users", async (req, res) => {
 user.post("/users/login", async (req, res) => {
   try {
     const user = await User.findByCredentials(
-      req.body.email,
-      req.body.password
+      req.body.data.email,
+      req.body.data.password
     );
     const token = await user.generateAuthToken();
     res.send({ user, token });
