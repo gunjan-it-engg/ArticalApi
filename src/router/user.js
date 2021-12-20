@@ -8,14 +8,18 @@ const auth = require("../middleware/auth");
 user.post("/users", async (req, res) => {
   try {
     const user = new User(req.body.data);
-    console.log("user", user);
-    await user.save();
-    const token = await user.generateAuthToken();
-    console.log(token);
-    res.status(201).send({ user });
+    const exist = await User.findOne({ email: req.body.data.email });
+    if (exist) {
+      return res.send({ error: "email already exist" });
+    } else {
+      console.log("user", user);
+      await user.save();
+      const token = await user.generateAuthToken();
+      console.log();
+      res.status(201).send({ user, token });
+    }
   } catch (error) {
-    console.log(error);
-    res.status(400).send(error.message);
+    res.status(400).send({ error: `error from catch ${error.message}` });
   }
 });
 
