@@ -2,6 +2,10 @@ const express = require("express");
 const user = new express.Router();
 const User = require("../models/user");
 const auth = require("../middleware/auth");
+const { OAuth2Client } = require("google-auth-library");
+const client = new OAuth2Client(
+  "302706363828-sipulvukleiuu4ij4hr7flapnhh6rbe7.apps.googleusercontent.com"
+);
 
 // user registration form
 
@@ -67,6 +71,29 @@ user.post("/users/login", async (req, res) => {
     );
     const token = await user.generateAuthToken();
     res.send({ user, token });
+  } catch (e) {
+    res.status(400).send({ error: e.message });
+  }
+});
+
+user.post("/users/googlelog", async (req, res) => {
+  try {
+    console.log("check", req.body.datag);
+    const token = req.body.datag;
+    console.log(token);
+    const ticket = await client.verifyIdToken({
+      idToken: token,
+      audience:
+        "302706363828-sipulvukleiuu4ij4hr7flapnhh6rbe7.apps.googleusercontent.com",
+    });
+    const { name, email, picture } = ticket.getPayload();
+    const user = await db.user.upsert({
+      where: { email: email },
+      update: { name, picture },
+      create: { name, email, picture },
+    });
+    res.status(201);
+    res.json(user);
   } catch (e) {
     res.status(400).send({ error: e.message });
   }
