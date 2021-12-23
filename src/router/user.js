@@ -1,8 +1,10 @@
 const express = require("express");
 const user = new express.Router();
 const User = require("../models/user");
+const Google = require("../models/googleAuth");
 const auth = require("../middleware/auth");
 const { OAuth2Client } = require("google-auth-library");
+const { findOneAndUpdate } = require("../models/user");
 const client = new OAuth2Client(
   "302706363828-sipulvukleiuu4ij4hr7flapnhh6rbe7.apps.googleusercontent.com"
 );
@@ -87,13 +89,27 @@ user.post("/users/googlelog", async (req, res) => {
         "302706363828-sipulvukleiuu4ij4hr7flapnhh6rbe7.apps.googleusercontent.com",
     });
     const { name, email, picture } = ticket.getPayload();
-    const user = await db.user.upsert({
-      where: { email: email },
-      update: { name, picture },
-      create: { name, email, picture },
-    });
-    res.status(201);
-    res.json(user);
+    const users = new User(ticket.getPayload());
+    console.log(name, email, picture);
+    const userExist = await User.findOne({ email });
+    if (userExist) {
+      const token = await users.generateAuthToken();
+      return res.status(201).send({ userExist, token });
+    } else {
+      const userExist = await new Google({ email, name });
+      await userExist.save();
+      const token = await users.generateAuthToken();
+      return res.status(201).send({ userExist, token });
+    }
+    // const user = await User.user.upsert({
+    //   where: { email: email },
+    //   update: { name, picture },
+    //   create: { name, email, picture },
+    // });
+
+    // console.log("hhh", user);
+    // res.status(201);
+    // res.send(user);
   } catch (e) {
     res.status(400).send({ error: e.message });
   }

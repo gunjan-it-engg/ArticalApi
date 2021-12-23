@@ -26,28 +26,7 @@ const userSchema = new mongoose.Schema(
         }
       },
     },
-    password: {
-      type: String,
-      default: "gunjan123",
-      unique: false,
-      required: false,
-      trim: true,
-      minlength: 3,
-      validate(value) {
-        if (value.includes("password")) {
-          throw new Error("Password canot contain 'password' ");
-        }
-      },
-    },
-    age: {
-      type: Number,
-      default: 20,
-      validate(value) {
-        if (value < 0) {
-          throw new Error("age must be positive number");
-        }
-      },
-    },
+
     tokens: [
       {
         token: {
@@ -108,5 +87,5 @@ userSchema.pre("save", async function (next) {
   next();
 });
 
-const User = mongoose.model("User", userSchema);
-module.exports = User;
+const Google = mongoose.model("Google", userSchema);
+module.exports = Google;
