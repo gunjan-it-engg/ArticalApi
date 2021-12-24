@@ -2,6 +2,7 @@ const express = require("express");
 const user = new express.Router();
 const User = require("../models/user");
 const Google = require("../models/googleAuth");
+const FaceBook = require("../models/fbAuth");
 const auth = require("../middleware/auth");
 const { OAuth2Client } = require("google-auth-library");
 const { findOneAndUpdate } = require("../models/user");
@@ -135,6 +136,48 @@ user.post("/users/logout", auth, async (req, res) => {
 //End Point for get use profile
 user.get("/users/me", auth, async (req, res) => {
   res.send(req.user);
+});
+
+user.post("/users/fblog", async (req, res) => {
+  try {
+    console.log("check", req.body.datag);
+    const fbdata = req.body.datag;
+
+    // const ticket = await client.verifyIdToken({
+    //   idToken: token,
+    //   audience:
+    //     "302706363828-sipulvukleiuu4ij4hr7flapnhh6rbe7.apps.googleusercontent.com",
+    // });
+    // const { name, email, picture } = ticket.getPayload();
+    // const users = new User(ticket.getPayload());
+    const users = new User(fbdata);
+
+    const userExist = await User.findOne({
+      email: req.body.datag.email,
+      name: req.body.datag.name,
+    });
+    const buffer = await sharp(req.body.datag.picture.data.url)
+      .resize(250, 250)
+      .png()
+      .toBuffer();
+    if (userExist) {
+      console.log("from if");
+      const token = await users.generateAuthToken();
+      return res.status(201).send({ userExist, token });
+    } else {
+      console.log("form else");
+      const userExist = await new FaceBook({
+        email: req.body.datag.email,
+        name: req.body.datag.name,
+      });
+      userExist.profileImage = buffer;
+      await userExist.save();
+      const token = await users.generateAuthToken();
+      return res.status(201).send({ userExist, token });
+    }
+  } catch (e) {
+    res.status(400).send({ error: e.message });
+  }
 });
 
 // //End-point for following to the user.
