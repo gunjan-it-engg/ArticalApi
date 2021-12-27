@@ -89,15 +89,18 @@ user.post("/users/googlelog", async (req, res) => {
       audience:
         "302706363828-sipulvukleiuu4ij4hr7flapnhh6rbe7.apps.googleusercontent.com",
     });
-    const { name, email, picture } = ticket.getPayload();
     const users = new User(ticket.getPayload());
+
+    const { name, email, picture } = ticket.getPayload();
+
     console.log(name, email, picture);
-    const userExist = await User.findOne({ email });
+    const userExist = await Google.findOne({ email });
     if (userExist) {
+      const userExist = { name, email, picture };
       const token = await users.generateAuthToken();
       return res.status(201).send({ userExist, token });
     } else {
-      const userExist = await new Google({ email, name });
+      const userExist = await new Google({ email, name, picture });
       await userExist.save();
       const token = await users.generateAuthToken();
       return res.status(201).send({ userExist, token });
@@ -143,40 +146,51 @@ user.post("/users/fblog", async (req, res) => {
     console.log("check", req.body.datag);
     const fbdata = req.body.datag;
 
-    // const ticket = await client.verifyIdToken({
-    //   idToken: token,
-    //   audience:
-    //     "302706363828-sipulvukleiuu4ij4hr7flapnhh6rbe7.apps.googleusercontent.com",
-    // });
-    // const { name, email, picture } = ticket.getPayload();
-    // const users = new User(ticket.getPayload());
     const users = new User(fbdata);
 
     const userExist = await User.findOne({
       email: req.body.datag.email,
       name: req.body.datag.name,
     });
-    const buffer = await sharp(req.body.datag.picture.data.url)
-      .resize(250, 250)
-      .png()
-      .toBuffer();
+
     if (userExist) {
-      console.log("from if");
+      console.log("from if", userExist);
+      const user = new User({
+        email: req.body.datag.email,
+        name: req.body.datag.name,
+        profileImage: req.body.datag.picture.data.url,
+      });
+      await user.save();
       const token = await users.generateAuthToken();
-      return res.status(201).send({ userExist, token });
+      return res.status(201).send({ user, token });
     } else {
       console.log("form else");
       const userExist = await new FaceBook({
         email: req.body.datag.email,
         name: req.body.datag.name,
+        profileImage: req.body.datag.picture.data.url,
       });
-      userExist.profileImage = buffer;
+      // userExist.profileImage = buffer;
       await userExist.save();
       const token = await users.generateAuthToken();
       return res.status(201).send({ userExist, token });
     }
   } catch (e) {
     res.status(400).send({ error: e.message });
+  }
+});
+
+user.get("/users/display", async (req, res) => {
+  try {
+    const emp = await Google.findOne(req.body.email);
+    console.log(emp);
+    if (emp) {
+      // const filteru = emp.picture;
+      res.status(200).send(emp.picture);
+    }
+  } catch (error) {
+    console.log(error);
+    res.status(404).send(error);
   }
 });
 

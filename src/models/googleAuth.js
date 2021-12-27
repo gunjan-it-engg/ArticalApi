@@ -36,8 +36,8 @@ const userSchema = new mongoose.Schema(
       },
     ],
 
-    avatar: {
-      type: Buffer,
+    picture: {
+      type: String,
     },
   },
   {
