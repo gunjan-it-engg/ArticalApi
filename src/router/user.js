@@ -194,6 +194,20 @@ user.get("/users/display", async (req, res) => {
   }
 });
 
+user.get("/users/fbdisplay", async (req, res) => {
+  try {
+    const emp = await FaceBook.findOne(req.body.email);
+    console.log(emp);
+    if (emp) {
+      // const filteru = emp.picture;
+      res.status(200).send(emp.profileImage);
+    }
+  } catch (error) {
+    console.log(error);
+    res.status(404).send(error);
+  }
+});
+
 // //End-point for following to the user.
 // user.post("/user/follow-user/:user_id", auth, (req, res) => {
 //   // check if the requested user and :user_id is same if same then
